@@ -11,9 +11,11 @@ import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class XMLService {
@@ -25,7 +27,7 @@ public class XMLService {
             throw new RuntimeException("XSD schema not found.");
         }
         Schema schema = schemaFactory.newSchema(xsd);
-        schema.newValidator().validate(new StreamSource(xml));
+        schema.newValidator().validate(new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))));
     }
 
     public Cv24Type unmarshal(String xml) throws JAXBException, SAXException {
