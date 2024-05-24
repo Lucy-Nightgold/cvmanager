@@ -2,6 +2,7 @@ package org.hortense.cvmanager.service;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import org.hortense.cvmanager.entities.Cv24Type;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -38,6 +40,15 @@ public class XMLService {
         Schema schema = schemaFactory.newSchema(xsd);
         unmarshaller.setSchema(schema);
         return (Cv24Type) unmarshaller.unmarshal(new StreamSource(new StringReader(xml)));
+    }
+
+    public String marshal(Cv24Type cv) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(Cv24Type.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        StringWriter sw = new StringWriter();
+        marshaller.marshal(cv, sw);
+        return sw.toString();
     }
 
     public String createResponseXML(Long id, String status, String details) {
