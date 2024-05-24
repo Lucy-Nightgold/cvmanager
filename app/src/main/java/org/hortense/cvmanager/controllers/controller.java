@@ -6,6 +6,7 @@ import jakarta.xml.bind.Unmarshaller;
 import org.hortense.cvmanager.entities.*;
 import org.hortense.cvmanager.service.CvManagerService;
 
+import org.hortense.cvmanager.service.XMLService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +24,11 @@ import java.util.Optional;
 @RestController
 public class controller {
     private final CvManagerService cvManagerService;
+    private final XMLService xmlService;
 
     public controller(CvManagerService cvManagerService) {
         this.cvManagerService = cvManagerService;
+        this.xmlService = new XMLService();
     }
 
 
@@ -58,40 +61,37 @@ public class controller {
         String details = "";
         Long id = null;
 
+        // Validate the XML against the schema
         try {
-            // Validate the XML against the schema
-            JAXBContext jaxbContext = JAXBContext.newInstance(Cv24Type.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            URL xsd = getClass().getClassLoader().getResource("static/cv.xsd");
-            if (xsd == null) {
-                throw new RuntimeException("XSD schema not found.");
-            }
-            Schema schema = schemaFactory.newSchema(xsd);
-            unmarshaller.setSchema(schema);
-            Cv24Type cv = (Cv24Type) unmarshaller.unmarshal(new StreamSource(new StringReader(cvXML)));
-
-            if (cvManagerService.cvAlreadyExists(cv)) {
-                status = "ERROR";
-                details = "DUPLICATED";
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(createResponseXML(null, status, details));
-            }
-
-
-            Cv24Type savedCv = cvManagerService.addCV(cv);
-            id = savedCv.getId();
-            status = "INSERTED";
-            return ResponseEntity.status(HttpStatus.CREATED).body(createResponseXML(id, status, details));
-
-        } catch (JAXBException e) {
-            status = "ERROR";
-            details = "INVALID";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createResponseXML(id, status, e.toString()));
+            xmlService.validateXML(cvXML);
         } catch (Exception e) {
-            status = "ERROR";
-            details = "INVALID";
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(createResponseXML(id, status, e.toString()));
+            status = "error while validating xml";
+            details = e.getMessage();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(createResponseXML(null, status, details));
         }
+
+        //parse XML:
+        Cv24Type cv;
+        try {
+            cv = xmlService.unmarshal(cvXML);
+        } catch (Exception e) {
+            status = "error while parsing xml";
+            details = e.getMessage();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(createResponseXML(null, status, details));
+        }
+
+        //check cv existence in database:
+        if (cvManagerService.cvAlreadyExists(cv)) {
+            status = "ERROR";
+            details = "DUPLICATED";
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(createResponseXML(null, status, details));
+        }
+
+        //save cv in database:
+        Cv24Type savedCv = cvManagerService.addCV(cv);
+        id = savedCv.getId();
+        status = "INSERTED";
+        return ResponseEntity.status(HttpStatus.CREATED).body(createResponseXML(id, status, details));
     }
 
     @DeleteMapping(value = "/cv24/delete",
