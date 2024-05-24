@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.xml.sax.SAXException;
 
 import java.io.StringWriter;
 import java.util.Optional;
@@ -75,7 +74,7 @@ public class controller {
 
     @GetMapping(value = "/cv24/xml",
             produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> getCvXML(@RequestParam Long id) throws JAXBException, SAXException {
+    public ResponseEntity<String> getCvXML(@RequestParam Long id) throws JAXBException {
         Optional<Cv24Type> cv = cvManagerService.findCvById(id);
 
         if (cv.isEmpty()) {
@@ -89,7 +88,7 @@ public class controller {
 
     @GetMapping(value = "/cv24/html",
             produces = MediaType.APPLICATION_XML_VALUE)
-    public ModelAndView getCvHTML(@RequestParam Long id) throws JAXBException, SAXException {
+    public ModelAndView getCvHTML(@RequestParam Long id) {
         Optional<Cv24Type> cv = cvManagerService.findCvById(id);
         ModelAndView modelAndView;
 
