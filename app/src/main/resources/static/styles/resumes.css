@@ -1,0 +1,91 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.cv-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 5%;
+}
+
+.cv-header {
+    color: #e62323;
+    border-bottom: 3px solid #333;
+}
+
+.cv-header h2 {
+    margin-top: 0;
+    margin-bottom: 5px;
+
+}
+
+.cv-header h3 {
+    margin-bottom: 0;
+}
+
+.cv {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1%;
+    padding: 2%;
+    width: 40%;
+}
+
+.cv p {
+    font-size: 1em;
+}
+
+.cv .name {
+    font-weight: bold;
+    color: #000;
+}
+
+.cv .objectif {
+    display: flex;
+    flex-direction: column;
+    padding-top: 2%;
+    padding-bottom: 5%;
+}
+
+.cv .objectif p {
+    margin-block: 1%;
+    font-weight: bold;
+}
+
+.cv .objectif span {
+
+    font-size: large;
+}
+
+.cv .diplome {
+    margin-top: 10px;
+}
+
+.cv .diplome b {
+    display: block;
+    font-size: large;
+    margin-bottom: 5px;
+}
+
+.cv .diplome i {
+    display: block;
+    margin-bottom: 5px;
+    font-size: small;
+    color: #555;
+}
+
+.cv .diplome p {
+    display: block;
+    margin: 0;
+}
+
+.cv .diplome .date {
+    font-size: 0.9em;
+    color: #888;
+}

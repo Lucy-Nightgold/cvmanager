@@ -1,11 +1,30 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
-    <head>
-        <title>Liste des CV</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
-    </head>
-    <body>
+<head>
+    <title>Liste des CV</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/resumes.css}"/>
+</head>
+<body>
+<div class="cv-container">
+    <div th:each="cv: ${cvs}" class="cv">
+        <div class="cv-header">
+            <h3 th:text="'CV n°' + ${cv.getId()}" />
+            <h2 th:text="${cv.getIdentite().getGenre().value() + ' ' + cv.getIdentite().getNom() + ' ' + cv.getIdentite().getPrenom()}" class="name" />
+        </div>
 
-    </body>
+        <div class="objectif">
+            <p th:text="'Objectif ' + ${cv.getObjectif().getStatut().value()}" />
+            <span th:text="${cv.getObjectif().getValue()}" />
+        </div>
+
+        <div th:with="highestDiplome=${cv.getCompetences().getHighestDiplomeByLevel()}" class="diplome">
+            <b th:text="${highestDiplome.getTitre()}" />
+            <p th:if="${highestDiplome.getInstitut()}" th:text="${highestDiplome.getInstitut()}" />
+            <i th:text="'Diplome de niveau ' + ${highestDiplome.getNiveau()}" />
+            <p th:text="'Obtenu le ' + ${#temporals.format(highestDiplome.getDate(), T(java.util.Locale).FRANCE)}"  class="date" />
+        </div>
+    </div>
+</div>
+</body>
 </html>

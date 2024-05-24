@@ -8,9 +8,6 @@
 
 package org.hortense.cvmanager.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -19,6 +16,9 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.springframework.data.jpa.domain.AbstractPersistable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**

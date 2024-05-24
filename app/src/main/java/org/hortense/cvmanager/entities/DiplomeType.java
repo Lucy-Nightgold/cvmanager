@@ -8,19 +8,13 @@
 
 package org.hortense.cvmanager.entities;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import jakarta.persistence.Entity;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hortense.cvmanager.tools.DateAdapter;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 
 

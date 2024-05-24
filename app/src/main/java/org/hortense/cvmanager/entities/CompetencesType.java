@@ -8,9 +8,6 @@
 
 package org.hortense.cvmanager.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -19,6 +16,10 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.springframework.data.jpa.domain.AbstractPersistable;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 
 /**
@@ -81,7 +82,7 @@ public class CompetencesType extends AbstractPersistable<Long> {
      */
     public List<DiplomeType> getDiplome() {
         if (diplome == null) {
-            diplome = new ArrayList<DiplomeType>();
+            diplome = new ArrayList<>();
         }
         return this.diplome;
     }
@@ -110,9 +111,15 @@ public class CompetencesType extends AbstractPersistable<Long> {
      */
     public List<CertifType> getCertif() {
         if (certif == null) {
-            certif = new ArrayList<CertifType>();
+            certif = new ArrayList<>();
         }
         return this.certif;
+    }
+
+    public DiplomeType getHighestDiplomeByLevel() {
+        return diplome.stream()
+                .max(Comparator.comparingInt(DiplomeType::getNiveau))
+                .orElse(null);
     }
 
 }

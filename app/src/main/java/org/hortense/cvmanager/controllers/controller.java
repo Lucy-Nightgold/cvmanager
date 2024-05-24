@@ -2,8 +2,11 @@ package org.hortense.cvmanager.controllers;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import org.hortense.cvmanager.entities.*;
+import org.hortense.cvmanager.entities.responses.ResumeCVs;
+import org.hortense.cvmanager.entities.responses.ResumeCv;
 import org.hortense.cvmanager.service.CvManagerService;
 
 import org.hortense.cvmanager.service.XMLService;
@@ -12,12 +15,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Optional;
 
@@ -31,24 +37,72 @@ public class controller {
         this.xmlService = new XMLService();
     }
 
-//    @GetMapping("/")
-//    @ResponseStatus(HttpStatus.OK)
-//    public ModelAndView index() {
-//        return new ModelAndView("index");
-//    }
+    @GetMapping(value = "/cv24/resume/xml",
+            produces = MediaType.APPLICATION_XML_VALUE)
+    public ResponseEntity<String>  getResumesXML() {
+        Iterable<Cv24Type> cvs = cvManagerService.retrieveCvs();
 
-    @GetMapping("/cv24/resume/xml")
-    public String getResumesXML() {
-        return cvManagerService.retrieveResumes();
+        if (!cvs.iterator().hasNext()) {
+            return new ResponseEntity<>("Aucun CV dans le serveur.", HttpStatus.NO_CONTENT);
+        }
+
+        ResumeCVs resumeCVs = new ResumeCVs();
+
+        for (Cv24Type cv : cvs) {
+            ResumeCv resumeCv = new ResumeCv();
+            resumeCv.setId(cv.getId());
+            resumeCv.setIdentiteType(cv.getIdentite());
+            resumeCv.setObjectifType(cv.getObjectif());
+            resumeCv.setDiplomeType(cvManagerService.getHighestDiplome(cv));
+            resumeCVs.addResumeCv(resumeCv);
+        }
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(ResumeCVs.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            StringWriter sw = new StringWriter();
+            marshaller.marshal(resumeCVs, sw);
+            return new ResponseEntity<>(sw.toString(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Erreur interne du serveur", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @GetMapping("/cv24/resume/html")
-    public String getCvHTML(Model model) {
-        model.addAttribute(cvManagerService.retrieveResumes());
-        return "resumes";
+    @GetMapping(value = "/cv24/resume/html",
+            produces = MediaType.TEXT_HTML_VALUE)
+    public ModelAndView getCvHTML() {
+        ModelAndView modelAndView = new ModelAndView("resumes");
+        Iterable<Cv24Type> cvs = cvManagerService.retrieveCvs();
+
+        modelAndView.addObject("cvs", cvs);
+        return modelAndView;
     }
 
-    @PostMapping("/cv24/insert")
+    @GetMapping(value = "/cv24/xml",
+            produces = MediaType.APPLICATION_XML_VALUE)
+    public ResponseEntity<String> getCvHTML(@RequestParam Long id) throws JAXBException, SAXException {
+        Optional<Cv24Type> cv = cvManagerService.findCvById(id);
+
+        if (cv.isEmpty()) {
+            return new ResponseEntity<>(xmlService.createResponseXML(id, "ERROR", ""), HttpStatus.NOT_FOUND);
+        }
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(Cv24Type.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        StringWriter sw = new StringWriter();
+        marshaller.marshal(cv.get(), sw);
+
+        return new ResponseEntity<>(sw.toString(), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/cv24/insert",
+            produces = MediaType.APPLICATION_XML_VALUE,
+            consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> insertCV(@RequestBody String cvXML) {
         String status = "";
         String details = "";
@@ -59,7 +113,7 @@ public class controller {
             xmlService.validateXML(cvXML);
         } catch (Exception e) {
             status = "error while validating xml";
-            details = e.getMessage();
+            details = "INVALID";
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(xmlService.createResponseXML(null, status, details));
         }
 
@@ -69,7 +123,7 @@ public class controller {
             cv = xmlService.unmarshal(cvXML);
         } catch (Exception e) {
             status = "error while parsing xml";
-            details = e.getMessage();
+            details = "INVALID";
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(xmlService.createResponseXML(null, status, details));
         }
 
@@ -94,12 +148,12 @@ public class controller {
         Optional<Cv24Type> cv = cvManagerService.findCvById(id);
 
         if (cv.isEmpty()) {
-            return new ResponseEntity<>("ERROR", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(xmlService.createResponseXML(null, "ERROR", ""), HttpStatus.BAD_REQUEST);
         }
 
         cvManagerService.deleteCv(cv.get());
 
-        return new ResponseEntity<>("DELETED", HttpStatus.OK);
+        return new ResponseEntity<>(xmlService.createResponseXML(id, "DELETED", ""), HttpStatus.OK);
     }
 
 }

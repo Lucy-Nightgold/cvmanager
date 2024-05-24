@@ -1,6 +1,7 @@
 package org.hortense.cvmanager.service;
 
 import org.hortense.cvmanager.entities.Cv24Type;
+import org.hortense.cvmanager.entities.DiplomeType;
 import org.hortense.cvmanager.entities.IdentiteType;
 import org.hortense.cvmanager.repositories.Cv24TypeRepository;
 import org.hortense.cvmanager.repositories.IdentityRepository;
@@ -20,9 +21,8 @@ public class CvManagerService {
 
 
 
-    public String retrieveResumes() {
-        Iterable<Cv24Type> cvs = cv24TypeRepository.findAll();
-        return "test";
+    public Iterable<Cv24Type> retrieveCvs() {
+        return cv24TypeRepository.findAll();
     }
 
     public Cv24Type addCV(Cv24Type cv) {
@@ -45,5 +45,9 @@ public class CvManagerService {
 
     public void deleteCv(Cv24Type cv) {
         cv24TypeRepository.delete(cv);
+    }
+
+    public DiplomeType getHighestDiplome(Cv24Type cv) {
+        return cv.getCompetences().getHighestDiplomeByLevel();
     }
 }

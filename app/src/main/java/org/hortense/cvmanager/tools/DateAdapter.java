@@ -11,13 +11,11 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
 
     @Override
     public String marshal(LocalDate date) {
-        System.out.println("ezqfsggsfgs_q");
         return date.format(DATE_TIME_FORMATTER);
     }
 
     @Override
     public LocalDate unmarshal(String date) {
-        System.out.println("ezqf_q");
         return LocalDate.parse(date, DATE_TIME_FORMATTER);
     }
 
