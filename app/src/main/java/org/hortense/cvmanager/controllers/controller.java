@@ -104,7 +104,7 @@ public class controller {
     }
 
     @GetMapping(value = "/cv24/html",
-            produces = MediaType.APPLICATION_XML_VALUE)
+            produces = MediaType.TEXT_HTML_VALUE)
     @Operation(summary = "Get a cv in HTML by his id", description = "Id must be in database")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "CV returned")})
