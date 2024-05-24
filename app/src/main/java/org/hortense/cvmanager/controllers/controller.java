@@ -70,7 +70,7 @@ public class controller {
         }
     }
 
-    @GetMapping(value = "/cv24/resume/html",
+    @GetMapping(value = "/cv24/resume",
             produces = MediaType.TEXT_HTML_VALUE)
     @Operation(summary = "Get a list of stored cv in HTML")
     @ApiResponses(value = {
