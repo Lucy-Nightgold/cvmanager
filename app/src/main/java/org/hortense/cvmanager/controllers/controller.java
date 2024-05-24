@@ -31,13 +31,6 @@ public class controller {
         this.xmlService = new XMLService();
     }
 
-
-    @GetMapping("/test")
-    @ResponseStatus(HttpStatus.OK)
-    public String test() {
-        return "le test";
-    }
-
 //    @GetMapping("/")
 //    @ResponseStatus(HttpStatus.OK)
 //    public ModelAndView index() {
