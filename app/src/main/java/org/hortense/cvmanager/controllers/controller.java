@@ -3,7 +3,6 @@ package org.hortense.cvmanager.controllers;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 import org.hortense.cvmanager.entities.*;
 import org.hortense.cvmanager.entities.responses.ResumeCVs;
 import org.hortense.cvmanager.entities.responses.ResumeCv;
@@ -13,18 +12,11 @@ import org.hortense.cvmanager.service.XMLService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.Optional;
 
 @RestController
@@ -39,7 +31,7 @@ public class controller {
 
     @GetMapping(value = "/cv24/resume/xml",
             produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String>  getCvsXML() {
+    public ResponseEntity<String>  getResumesXML() {
         Iterable<Cv24Type> cvs = cvManagerService.retrieveCvs();
 
         if (!cvs.iterator().hasNext()) {
@@ -73,7 +65,7 @@ public class controller {
 
     @GetMapping(value = "/cv24/resume/html",
             produces = MediaType.TEXT_HTML_VALUE)
-    public ModelAndView getCvsHTML() {
+    public ModelAndView getResumesHTML() {
         ModelAndView modelAndView = new ModelAndView("resumes");
         Iterable<Cv24Type> cvs = cvManagerService.retrieveCvs();
 
@@ -90,14 +82,9 @@ public class controller {
             return new ResponseEntity<>(xmlService.createResponseXML(id, "ERROR", ""), HttpStatus.NOT_FOUND);
         }
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(Cv24Type.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        String sw = xmlService.marshal(cv.get());
 
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(cv.get(), sw);
-
-        return new ResponseEntity<>(sw.toString(), HttpStatus.OK);
+        return new ResponseEntity<>(sw, HttpStatus.OK);
     }
 
     @GetMapping(value = "/cv24/html",
