@@ -75,7 +75,7 @@ public class controller {
 
     @GetMapping(value = "/cv24/xml",
             produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> getCvHTML(@RequestParam Long id) throws JAXBException, SAXException {
+    public ResponseEntity<String> getCvXML(@RequestParam Long id) throws JAXBException, SAXException {
         Optional<Cv24Type> cv = cvManagerService.findCvById(id);
 
         if (cv.isEmpty()) {
@@ -85,6 +85,23 @@ public class controller {
         String sw = xmlService.marshal(cv.get());
 
         return new ResponseEntity<>(sw, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/cv24/html",
+            produces = MediaType.APPLICATION_XML_VALUE)
+    public ModelAndView getCvHTML(@RequestParam Long id) throws JAXBException, SAXException {
+        Optional<Cv24Type> cv = cvManagerService.findCvById(id);
+        ModelAndView modelAndView;
+
+        if (cv.isPresent()) {
+            modelAndView = new ModelAndView("cv");
+            modelAndView.addObject("cvs", cv.get());
+        } else {
+            modelAndView = new ModelAndView("cvNotFound");
+            modelAndView.addObject("id", id);
+        }
+
+        return modelAndView;
     }
 
     @PostMapping(value = "/cv24/insert",
