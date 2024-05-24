@@ -1,5 +1,8 @@
 package org.hortense.cvmanager.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -19,6 +22,7 @@ import java.io.StringWriter;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/")
 public class controller {
     private final CvManagerService cvManagerService;
     private final XMLService xmlService;
@@ -30,6 +34,10 @@ public class controller {
 
     @GetMapping(value = "/cv24/resume/xml",
             produces = MediaType.APPLICATION_XML_VALUE)
+    @Operation(summary = "Get a list of stored cv in XML")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "No cv in the server."),
+            @ApiResponse(responseCode = "200", description = "Resume of cvs")})
     public ResponseEntity<String>  getResumesXML() {
         Iterable<Cv24Type> cvs = cvManagerService.retrieveCvs();
 
@@ -64,9 +72,14 @@ public class controller {
 
     @GetMapping(value = "/cv24/resume/html",
             produces = MediaType.TEXT_HTML_VALUE)
+    @Operation(summary = "Get a list of stored cv in HTML")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Resume of cvs")})
     public ModelAndView getResumesHTML() {
         ModelAndView modelAndView = new ModelAndView("resumes");
         Iterable<Cv24Type> cvs = cvManagerService.retrieveCvs();
+
+
 
         modelAndView.addObject("cvs", cvs);
         return modelAndView;
@@ -74,6 +87,10 @@ public class controller {
 
     @GetMapping(value = "/cv24/xml",
             produces = MediaType.APPLICATION_XML_VALUE)
+    @Operation(summary = "Get a cv in XML by his id", description = "Id must be in database")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "CV returned"),
+            @ApiResponse(responseCode = "404", description = "CV not found")})
     public ResponseEntity<String> getCvXML(@RequestParam Long id) throws JAXBException {
         Optional<Cv24Type> cv = cvManagerService.findCvById(id);
 
@@ -88,6 +105,9 @@ public class controller {
 
     @GetMapping(value = "/cv24/html",
             produces = MediaType.APPLICATION_XML_VALUE)
+    @Operation(summary = "Get a cv in HTML by his id", description = "Id must be in database")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "CV returned")})
     public ModelAndView getCvHTML(@RequestParam Long id) {
         Optional<Cv24Type> cv = cvManagerService.findCvById(id);
         ModelAndView modelAndView;
@@ -106,6 +126,11 @@ public class controller {
     @PostMapping(value = "/cv24/insert",
             produces = MediaType.APPLICATION_XML_VALUE,
             consumes = MediaType.APPLICATION_XML_VALUE)
+    @Operation(summary = "Add a new cv in database", description = "XML mush respect CV24 XSD")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "CV inserted"),
+            @ApiResponse(responseCode = "403", description = "CV not validated"),
+            @ApiResponse(responseCode = "409", description = "CV already in database")})
     public ResponseEntity<String> insertCV(@RequestBody String cvXML) {
         String status = "";
         String details = "";
@@ -147,6 +172,10 @@ public class controller {
     @DeleteMapping(value = "/cv24/delete",
             produces = MediaType.APPLICATION_XML_VALUE
     )
+    @Operation(summary = "Delete a cv by his id", description = "Id must be in database")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "CV deleted"),
+            @ApiResponse(responseCode = "400", description = "CV not founded")})
     public ResponseEntity<String> deleteCv(@RequestParam Long id) {
         Optional<Cv24Type> cv = cvManagerService.findCvById(id);
 
