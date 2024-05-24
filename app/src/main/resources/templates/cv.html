@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <title th:text="'CV - ' + ${cv.identite.nom + ' ' + cv.identite.prenom}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/cv.css}"/>
+</head>
+<body>
+<div class="document">
+    <header>
+        <h1 th:text="'CV - ' + ${cv.identite.nom + ' ' + cv.identite.prenom}"></h1>
+        <h2 th:text="'Objectif ' + ${cv.objectif.statut}"></h2>
+        <div class="item"><span th:text="${cv.objectif.value}"></span></div>
+    </header>
+
+    <section class="section">
+        <h2>Identité</h2>
+        <div class="identite"><span th:text="${cv.identite.genre.value() + ' ' + cv.identite.nom + ' ' + cv.identite.prenom}"></span></div>
+        <div th:if="${cv.identite.tel}" class="item"><span class="item-title">Téléphone: </span><span th:text="${cv.identite.tel}"></span></div>
+        <div th:if="${cv.identite.mel}" class="item"><span class="item-title">Email: </span><a th:href="'mailto:' + ${cv.identite.mel}" th:text="${cv.identite.mel}"></a></div>
+    </section>
+
+    <section th:if="${cv.prof}" class="section">
+        <h2>Expériences Professionnelles</h2>
+        <div th:each="prof : ${cv.prof.detail}">
+            <div class="item">
+                <div class="item-title" th:text="${prof.titre}"></div>
+                <div th:if="${prof.datefin != null}">
+                    Du <span th:text="${#temporals.format(prof.datedeb, T(java.util.Locale).FRANCE)}"></span>
+                    au <span th:text="${#temporals.format(prof.datefin, T(java.util.Locale).FRANCE)}"></span>
+                </div>
+                <div th:unless="${prof.datefin != null}">
+                    Depuis le <span th:text="${#temporals.format(prof.datedeb, T(java.util.Locale).FRANCE)}"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>Compétences</h2>
+        <div class="item">
+            <div class="item-title">Diplômes</div>
+            <ul>
+                <li th:each="diplome : ${cv.getCompetences().getDiplome()}">
+                    <span th:text="${diplome.getTitre()}"></span>,
+                    <span th:text="${diplome.institut}"></span>,
+                    <span th:text="${#temporals.format(diplome.date, T(java.util.Locale).FRANCE)}"></span>
+                </li>
+            </ul>
+        </div>
+        <div th:if="${cv.competences.certif}" class="item">
+            <div class="item-title">Certifications</div>
+            <ul>
+                <li th:each="certif : ${cv.competences.certif}">
+                    <span th:text="${certif.titre}">Agile Scrum Master</span>,
+                    <span th:text="${#temporals.format(certif.datedeb, T(java.util.Locale).FRANCE)}"></span>
+                    <span th:if="${certif.datefin != null}">
+                        au <span th:text="${#temporals.format(certif.datefin, T(java.util.Locale).FRANCE)}"></span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section th:if="${cv.divers}" class="section">
+        <h2>Divers</h2>
+        <div class="item">
+            <div class="item-title">Langues</div>
+            <ul>
+                <li th:each="lv : ${cv.divers.lv}">
+                    <span th:text="${lv.lang}"></span>
+                    (<span th:text="${lv.cert}"></span>
+                    <span th:if="${lv.nivs}" th:text="${lv.nivs.value()}"></span>
+                    <span th:if="${lv.nivi}" th:text="${lv.nivi.value()}"></span>)
+                </li>
+            </ul>
+        </div>
+        <div th:if="${cv.divers.autre}" class="item">
+            <div class="item-title">Autres</div>
+            <ul>
+                <li th:each="autre : ${cv.divers.autre}">
+                    <span th:text="${autre.titre}"></span>
+                    (<span th:if="${autre.comment}" th:text="${autre.comment}"></span>)
+                </li>
+            </ul>
+        </div>
+    </section>
+</div>
+</body>
+</html>

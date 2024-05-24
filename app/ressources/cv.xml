@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cv24:cv24 xmlns:cv24="http://univ.fr/cv24" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <cv24:identite>
-    <cv24:genre>M.</cv24:genre>
-    <cv24:nom>DUCROQ</cv24:nom>
-    <cv24:prenom>Yohann</cv24:prenom>
+    <cv24:genre>Mme</cv24:genre>
+    <cv24:nom>DUPONT</cv24:nom>
+    <cv24:prenom>Julie</cv24:prenom>
     <cv24:tel>+33 6 06 06 06 06</cv24:tel>
-    <cv24:mel>yohann.ducroq@univ-rouen.com</cv24:mel>
+    <cv24:mel>julie.dupont@univ-rouen.com</cv24:mel>
   </cv24:identite>
-  <cv24:objectif statut="stage"/>
+  <cv24:objectif statut="stage">Développeuse Front End </cv24:objectif>
   <cv24:prof>
     <cv24:detail>
 		<cv24:datedeb>2021-07-01</cv24:datedeb>
 		<cv24:datefin>2021-09-03</cv24:datefin>
-		<cv24:titre>Stage developpeur backend</cv24:titre>
+		<cv24:titre>Stage développeuse backend</cv24:titre>
     </cv24:detail>
     <cv24:detail>
     	<cv24:datedeb>2023-04-01</cv24:datedeb>
     	<cv24:datefin>2023-06-01</cv24:datefin>
-    	<cv24:titre>Stage developpeur fullstack</cv24:titre>
+    	<cv24:titre>Stage développeuse fullstack</cv24:titre>
     </cv24:detail>
+	  <cv24:detail>
+		  <cv24:datedeb>2024-01-07</cv24:datedeb>
+		  <cv24:titre>Hôtesse d'accueil - Carrefour</cv24:titre>
+	  </cv24:detail>
   </cv24:prof>
   <cv24:competences>
     <cv24:diplome niveau="4">
@@ -42,7 +46,7 @@
     </cv24:certif>
   </cv24:competences>
   <cv24:divers>
-    <cv24:lv cert="MAT" lang="fr"/><cv24:lv cert="CLES" lang="en" /><cv24:autre
-  		titre="Permis de conduire" comment="B" />
+    <cv24:lv cert="MAT" lang="fr"/><cv24:lv cert="CLES" lang="en" nivs="B2" />
+    <cv24:autre titre="Permis de conduire" comment="B" />
   </cv24:divers>
 </cv24:cv24>

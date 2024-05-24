@@ -108,7 +108,7 @@ public class controller {
 
         if (cv.isPresent()) {
             modelAndView = new ModelAndView("cv");
-            modelAndView.addObject("cvs", cv.get());
+            modelAndView.addObject("cv", cv.get());
         } else {
             modelAndView = new ModelAndView("cvNotFound");
             modelAndView.addObject("id", id);
