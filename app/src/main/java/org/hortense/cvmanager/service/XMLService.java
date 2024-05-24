@@ -38,4 +38,18 @@ public class XMLService {
         return (Cv24Type) unmarshaller.unmarshal(new StreamSource(new StringReader(xml)));
     }
 
+    public String createResponseXML(Long id, String status, String details) {
+        StringBuilder responseXML = new StringBuilder();
+        responseXML.append("<response>");
+        if (id != null) {
+            responseXML.append("<id>").append(id).append("</id>");
+        }
+        responseXML.append("<status>").append(status).append("</status>");
+        if (!details.isEmpty()) {
+            responseXML.append("<detail>").append(details).append("</detail>");
+        }
+        responseXML.append("</response>");
+        return responseXML.toString();
+    }
+
 }

@@ -67,7 +67,7 @@ public class controller {
         } catch (Exception e) {
             status = "error while validating xml";
             details = e.getMessage();
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(createResponseXML(null, status, details));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(xmlService.createResponseXML(null, status, details));
         }
 
         //parse XML:
@@ -77,21 +77,21 @@ public class controller {
         } catch (Exception e) {
             status = "error while parsing xml";
             details = e.getMessage();
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(createResponseXML(null, status, details));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(xmlService.createResponseXML(null, status, details));
         }
 
         //check cv existence in database:
         if (cvManagerService.cvAlreadyExists(cv)) {
             status = "ERROR";
             details = "DUPLICATED";
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(createResponseXML(null, status, details));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(xmlService.createResponseXML(null, status, details));
         }
 
         //save cv in database:
         Cv24Type savedCv = cvManagerService.addCV(cv);
         id = savedCv.getId();
         status = "INSERTED";
-        return ResponseEntity.status(HttpStatus.CREATED).body(createResponseXML(id, status, details));
+        return ResponseEntity.status(HttpStatus.CREATED).body(xmlService.createResponseXML(id, status, details));
     }
 
     @DeleteMapping(value = "/cv24/delete",
@@ -107,20 +107,6 @@ public class controller {
         cvManagerService.deleteCv(cv.get());
 
         return new ResponseEntity<>("DELETED", HttpStatus.OK);
-    }
-
-    private String createResponseXML(Long id, String status, String details) {
-        StringBuilder responseXML = new StringBuilder();
-        responseXML.append("<response>");
-        if (id != null) {
-            responseXML.append("<id>").append(id).append("</id>");
-        }
-        responseXML.append("<status>").append(status).append("</status>");
-        if (!details.isEmpty()) {
-            responseXML.append("<detail>").append(details).append("</detail>");
-        }
-        responseXML.append("</response>");
-        return responseXML.toString();
     }
 
 }
